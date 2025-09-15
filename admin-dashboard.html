@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+            color: #333;
+        }
+
+        .header {
+            background: #fff;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            color: #2563eb;
+        }
+
+        .logout-btn {
+            background: #dc2626;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            font-size: 0.875rem;
+        }
+
+        .logout-btn:hover {
+            background: #b91c1c;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        .tabs {
+            display: flex;
+            background: white;
+            border-radius: 0.5rem;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 1rem;
+            text-align: center;
+            background: #f8fafc;
+            border: none;
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .tab.active {
+            background: #2563eb;
+            color: white;
+        }
+
+        .tab:hover:not(.active) {
+            background: #e2e8f0;
+        }
+
+        .tab-content {
+            display: none;
+            background: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .section-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .section-header h2 {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .btn {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            font-size: 0.875rem;
+            transition: background 0.2s;
+        }
+
+        .btn:hover {
+            background: #1d4ed8;
+        }
+
+        .btn-danger {
+            background: #dc2626;
+        }
+
+        .btn-danger:hover {
+            background: #b91c1c;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .table th,
+        .table td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .table th {
+            background: #f8fafc;
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: #374151;
+        }
+
+        .table td {
+            font-size: 0.875rem;
+        }
+
+        .table tr:hover {
+            background: #f9fafb;
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.375rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .status-success {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .status-error {
+            background: #fef2f2;
+            color: #991b1b;
+        }
+
+        .status-active {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .status-inactive {
+            background: #f3f4f6;
+            color: #6b7280;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
+
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            border-radius: 0.5rem;
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal h3 {
+            margin-bottom: 1rem;
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            font-size: 0.875rem;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: flex-end;
+            margin-top: 1.5rem;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: #6b7280;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 3rem;
+            color: #6b7280;
+        }
+
+        .actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-sm {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.75rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Admin Dashboard</h1>
+        <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+
+    <div class="container">
+        <div class="tabs">
+            <button class="tab active" data-tab="users">Users</button>
+            <button class="tab" data-tab="logs">Login Logs</button>
+            <button class="tab" data-tab="sessions">Active Sessions</button>
+        </div>
+
+        <!-- Users Tab -->
+        <div class="tab-content active" id="users">
+            <div class="section-header">
+                <h2>User Management</h2>
+                <button class="btn" onclick="openAddUserModal()">Add User</button>
+            </div>
+            <div id="users-loading" class="loading">Loading users...</div>
+            <div id="users-content" style="display: none;">
+                <table class="table" id="users-table">
+                    <thead>
+                        <tr>
+                            <th>Username</th>
+                            <th>Role</th>
+                            <th>Status</th>
+                            <th>Created</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Login Logs Tab -->
+        <div class="tab-content" id="logs">
+            <div class="section-header">
+                <h2>Login Logs</h2>
+                <button class="btn" onclick="loadLogs()">Refresh</button>
+            </div>
+            <div id="logs-loading" class="loading">Loading logs...</div>
+            <div id="logs-content" style="display: none;">
+                <table class="table" id="logs-table">
+                    <thead>
+                        <tr>
+                            <th>Timestamp</th>
+                            <th>Username</th>
+                            <th>Status</th>
+                            <th>IP Address</th>
+                            <th>User Agent</th>
+                            <th>Country</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Active Sessions Tab -->
+        <div class="tab-content" id="sessions">
+            <div class="section-header">
+                <h2>Active Sessions</h2>
+                <button class="btn" onclick="loadSessions()">Refresh</button>
+            </div>
+            <div id="sessions-loading" class="loading">Loading sessions...</div>
+            <div id="sessions-content" style="display: none;">
+                <table class="table" id="sessions-table">
+                    <thead>
+                        <tr>
+                            <th>Username</th>
+                            <th>Role</th>
+                            <th>IP Address</th>
+                            <th>Country</th>
+                            <th>Created</th>
+                            <th>Expires</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit User Modal -->
+    <div class="modal" id="user-modal">
+        <div class="modal-content">
+            <h3 id="modal-title">Add User</h3>
+            <form id="user-form">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                <div class="form-group">
+                    <label for="role">Role</label>
+                    <select id="role" name="role">
+                        <option value="user">User</option>
+                        <option value="admin">Admin</option>
+                    </select>
+                </div>
+                <div class="form-group" id="status-group" style="display: none;">
+                    <label for="is_active">Status</label>
+                    <select id="is_active" name="is_active">
+                        <option value="true">Active</option>
+                        <option value="false">Inactive</option>
+                    </select>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn" style="background: #6b7280;" onclick="closeModal()">Cancel</button>
+                    <button type="submit" class="btn">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let sessionId = localStorage.getItem('sessionId');
+        let currentEditingUserId = null;
+
+        // Check if user is logged in and is admin
+        if (!sessionId) {
+            window.location.href = 'login.html';
+        }
+
+        // Tab switching
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                const tabName = tab.dataset.tab;
+                
+                // Update active tab
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                
+                // Update active content
+                document.querySelectorAll('.tab-content').forEach(content => {
+                    content.classList.remove('active');
+                });
+                document.getElementById(tabName).classList.add('active');
+                
+                // Load data for the active tab
+                switch(tabName) {
+                    case 'users':
+                        loadUsers();
+                        break;
+                    case 'logs':
+                        loadLogs();
+                        break;
+                    case 'sessions':
+                        loadSessions();
+                        break;
+                }
+            });
+        });
+
+        // API functions
+        async function apiRequest(endpoint, options = {}) {
+            const defaultOptions = {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${sessionId}`
+                }
+            };
+
+            const response = await fetch(endpoint, {
+                ...defaultOptions,
+                ...options,
+                headers: {
+                    ...defaultOptions.headers,
+                    ...options.headers
+                }
+            });
+
+            if (response.status === 401) {
+                alert('Session expired. Please log in again.');
+                localStorage.removeItem('sessionId');
+                window.location.href = 'login.html';
+                return;
+            }
+
+            return response.json();
+        }
+
+        // Load users
+        async function loadUsers() {
+            document.getElementById('users-loading').style.display = 'block';
+            document.getElementById('users-content').style.display = 'none';
+
+            try {
+                const result = await apiRequest('/.netlify/functions/admin?action=users');
+                
+                if (result.success) {
+                    const tbody = document.querySelector('#users-table tbody');
+                    tbody.innerHTML = '';
+
+                    result.users.forEach(user => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${user.username}</td>
+                            <td><span class="status-badge ${user.role === 'admin' ? 'status-success' : 'status-active'}">${user.role}</span></td>
+                            <td><span class="status-badge ${user.is_active ? 'status-active' : 'status-inactive'}">${user.is_active ? 'Active' : 'Inactive'}</span></td>
+                            <td>${new Date(user.created_at).toLocaleDateString()}</td>
+                            <td>
+                                <div class="actions">
+                                    <button class="btn btn-sm" onclick="editUser(${user.id}, '${user.username}', '${user.role}', ${user.is_active})">Edit</button>
+                                    <button class="btn btn-danger btn-sm" onclick="deleteUser(${user.id}, '${user.username}')">Delete</button>
+                                </div>
+                            </td>
+                        `;
+                        tbody.appendChild(row);
+                    });
+
+                    document.getElementById('users-loading').style.display = 'none';
+                    document.getElementById('users-content').style.display = 'block';
+                }
+            } catch (error) {
+                console.error('Error loading users:', error);
+                alert('Error loading users');
+            }
+        }
+
+        // Load login logs
+        async function loadLogs() {
+            document.getElementById('logs-loading').style.display = 'block';
+            document.getElementById('logs-content').style.display = 'none';
+
+            try {
+                const result = await apiRequest('/.netlify/functions/admin?action=logs');
+                
+                if (result.success) {
+                    const tbody = document.querySelector('#logs-table tbody');
+                    tbody.innerHTML = '';
+
+                    result.logs.forEach(log => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${new Date(log.timestamp).toLocaleString()}</td>
+                            <td>${log.username}</td>
+                            <td><span class="status-badge ${log.success ? 'status-success' : 'status-error'}">${log.success ? 'Success' : 'Failed'}</span></td>
+                            <td>${log.ip_address}</td>
+                            <td title="${log.user_agent}">${log.user_agent ? log.user_agent.substring(0, 50) + '...' : 'Unknown'}</td>
+                            <td>${log.country}</td>
+                        `;
+                        tbody.appendChild(row);
+                    });
+
+                    document.getElementById('logs-loading').style.display = 'none';
+                    document.getElementById('logs-content').style.display = 'block';
+                }
+            } catch (error) {
+                console.error('Error loading logs:', error);
+                alert('Error loading logs');
+            }
+        }
+
+        // Load active sessions
+        async function loadSessions() {
+            document.getElementById('sessions-loading').style.display = 'block';
+            document.getElementById('sessions-content').style.display = 'none';
+
+            try {
+                const result = await apiRequest('/.netlify/functions/admin?action=sessions');
+                
+                if (result.success) {
+                    const tbody = document.querySelector('#sessions-table tbody');
+                    tbody.innerHTML = '';
+
+                    result.sessions.forEach(session => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${session.users.username}</td>
+                            <td><span class="status-badge ${session.users.role === 'admin' ? 'status-success' : 'status-active'}">${session.users.role}</span></td>
+                            <td>${session.ip_address}</td>
+                            <td>${session.country}</td>
+                            <td>${new Date(session.created_at).toLocaleString()}</td>
+                            <td>${new Date(session.expires_at).toLocaleString()}</td>
+                            <td>
+                                <button class="btn btn-danger btn-sm" onclick="terminateSession('${session.session_id}')">Terminate</button>
+                            </td>
+                        `;
+                        tbody.appendChild(row);
+                    });
+
+                    document.getElementById('sessions-loading').style.display = 'none';
+                    document.getElementById('sessions-content').style.display = 'block';
+                }
+            } catch (error) {
+                console.error('Error loading sessions:', error);
+                alert('Error loading sessions');
+            }
+        }
+
+        // Modal functions
+        function openAddUserModal() {
+            currentEditingUserId = null;
+            document.getElementById('modal-title').textContent = 'Add User';
+            document.getElementById('user-form').reset();
+            document.getElementById('status-group').style.display = 'none';
+            document.getElementById('user-modal').style.display = 'block';
+        }
+
+        function editUser(userId, username, role, isActive) {
+            currentEditingUserId = userId;
+            document.getElementById('modal-title').textContent = 'Edit User';
+            document.getElementById('username').value = username;
+            document.getElementById('password').value = '';
+            document.getElementById('password').placeholder = 'Leave blank to keep current password';
+            document.getElementById('password').required = false;
+            document.getElementById('role').value = role;
+            document.getElementById('is_active').value = isActive.toString();
+            document.getElementById('status-group').style.display = 'block';
+            document.getElementById('user-modal').style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('user-modal').style.display = 'none';
+            document.getElementById('password').required = true;
+            document.getElementById('password').placeholder = '';
+        }
+
+        // Form submission
+        document.getElementById('user-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const userData = {
+                username: formData.get('username'),
+                password: formData.get('password'),
+                role: formData.get('role')
+            };
+
+            if (currentEditingUserId) {
+                userData.userId = currentEditingUserId;
+                userData.is_active = formData.get('is_active') === 'true';
+                
+                // Don't send password if it's empty (keep current password)
+                if (!userData.password) {
+                    delete userData.password;
+                }
+            }
+
+            try {
+                const method = currentEditingUserId ? 'PUT' : 'POST';
+                const result = await apiRequest('/.netlify/functions/admin', {
+                    method,
+                    body: JSON.stringify(userData)
+                });
+
+                if (result.success) {
+                    alert(currentEditingUserId ? 'User updated successfully' : 'User created successfully');
+                    closeModal();
+                    loadUsers();
+                } else {
+                    alert(result.message || 'Error saving user');
+                }
+            } catch (error) {
+                console.error('Error saving user:', error);
+                alert('Error saving user');
+            }
+        });
+
+        // Delete user
+        async function deleteUser(userId, username) {
+            if (confirm(`Are you sure you want to delete user "${username}"?`)) {
+                try {
+                    const result = await apiRequest('/.netlify/functions/admin', {
+                        method: 'DELETE',
+                        body: JSON.stringify({ userId })
+                    });
+
+                    if (result.success) {
+                        alert('User deleted successfully');
+                        loadUsers();
+                    } else {
+                        alert(result.message || 'Error deleting user');
+                    }
+                } catch (error) {
+                    console.error('Error deleting user:', error);
+                    alert('Error deleting user');
+                }
+            }
+        }
+
+        // Terminate session
+        async function terminateSession(sessionIdToTerminate) {
+            if (confirm('Are you sure you want to terminate this session?')) {
+                try {
+                    const result = await apiRequest('/.netlify/functions/logout', {
+                        method: 'POST',
+                        body: JSON.stringify({ sessionId: sessionIdToTerminate })
+                    });
+
+                    if (result.success) {
+                        alert('Session terminated successfully');
+                        loadSessions();
+                    } else {
+                        alert(result.message || 'Error terminating session');
+                    }
+                } catch (error) {
+                    console.error('Error terminating session:', error);
+                    alert('Error terminating session');
+                }
+            }
+        }
+
+        // Logout
+        async function logout() {
+            try {
+                await apiRequest('/.netlify/functions/logout', {
+                    method: 'POST',
+                    body: JSON.stringify({ sessionId })
+                });
+            } catch (error) {
+                console.error('Error logging out:', error);
+            } finally {
+                localStorage.removeItem('sessionId');
+                window.location.href = 'login.html';
+            }
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('user-modal').addEventListener('click', (e) => {
+            if (e.target === document.getElementById('user-modal')) {
+                closeModal();
+            }
+        });
+
+        // Load initial data
+        loadUsers();
+    </script>
+</body>
+</html>
